@@ -1,25 +1,73 @@
 {% extends "base.html" %}
 
-{% block title %}Home{% endblock title %}
+{% block title %}Home{% endblock %}
 
 {% block content %}
-<div style="padding: 20px;">
-  <h2>Submit a Ticket</h2>
+<!-- Optional: Enable dark theme globally -->
+<body data-bs-theme="dark">
 
-  <form action="{{ url_for('ticket_process') }}" method="post">
-    <input type="text" name="ticket" placeholder="Enter your ticket query" required>
-    <button type="submit">Submit</button>
-  </form>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
 
-  <hr>
+      <!-- Ticket Submission Card -->
+      <div class="card bg-dark text-light shadow-sm mb-4">
+        <div class="card-header bg-secondary text-white">
+          <h5 class="mb-0">Submit a Ticket</h5>
+        </div>
+        <div class="card-body">
+          <form action="{{ url_for('ticket_process') }}" method="post">
+            <div class="mb-3">
+              <label for="ticketInput" class="form-label">Ticket Query</label>
+              <input type="text" class="form-control bg-dark text-light border-light" id="ticketInput" name="ticket" placeholder="Describe your issue..." required>
+            </div>
+            <button type="submit" class="btn btn-outline-light w-100">Submit</button>
+          </form>
+        </div>
+      </div>
 
-  {% if result %}
-  <div style="margin-top: 20px; border: 1px solid #ccc; padding: 10px;">
-    <h3>Analysis Result:</h3>
-    <p><strong>Priority:</strong> {{ result.priority }}</p>
-    <p><strong>Sentiment Score:</strong> {{ result.sentiment_score }}</p>
-    <pre>{{ result.sentiment | tojson(indent=2) }}</pre>
+      <!-- Analysis Result Card -->
+      {% if result %}
+      <div class="card bg-dark text-light shadow-sm">
+        <div class="card-header bg-secondary text-white">
+          <h5 class="mb-0">Ticket Analysis Result</h5>
+        </div>
+        <div class="card-body">
+
+          <!-- Result Table -->
+          <div class="table-responsive">
+            <table class="table table-dark table-bordered align-middle">
+              <thead class="table-secondary text-dark">
+                <tr>
+                  <th>Metric</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Priority</td>
+                  <td class="text-info fw-bold">{{ result.priority }}</td>
+                </tr>
+                <tr>
+                  <td>Sentiment Score</td>
+                  <td class="text-success fw-bold">{{ result.sentiment_score }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- JSON Breakdown -->
+          <div class="mt-4">
+            <h6>Sentiment Breakdown</h6>
+            <pre class="bg-secondary text-dark p-3 border rounded">{{ result.sentiment | tojson(indent=2) }}</pre>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
   </div>
-  {% endif %}
 </div>
+
+</body>
 {% endblock %}
