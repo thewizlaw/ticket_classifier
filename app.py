@@ -1,14 +1,16 @@
-from flask import Flask, request, jsonify, request, render_template, send_from_directory, redirect
+from flask import Flask, request, jsonify, request, render_template, send_from_directory, redirect, session, url_for
 import spacy
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
+app.secret_key = 'supersecretkey' 
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    result = session.pop('result', None)
+    return render_template('home.html', result=result)
 
-@app.route('/ticket', methods=['POST'])
+@app.route('/ticket', methods=['POST', 'GET'])
 def ticket_process():
     ticket = request.form.get('ticket')
     nlp = spacy.load("en_core_web_sm")
@@ -42,11 +44,14 @@ def ticket_process():
     print(sentiment)
     print(f"Sentiment Score: {score}")
     
-    response = {
+    result = {
         'priority': 'High' if keyword_critic > 1 else 'Medium' if keyword_critic == 1 else 'Low',
-        'sentiment_score': score
+        'sentiment_score': score,
+        'sentiment': sentiment
     }
-    return jsonify(response)
+    
+    session['result'] = result
+    return redirect(url_for('home'))  
 
 if __name__ == '__main__':
     app.run(debug=True)

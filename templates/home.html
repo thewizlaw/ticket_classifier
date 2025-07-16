@@ -3,9 +3,23 @@
 {% block title %}Home{% endblock title %}
 
 {% block content %}
-<form action="{{ url_for('ticket_process') }}" method="post">
-    <input type="text" name="ticket" placeholder="Enter ticket query" required>
-    <button type="submit">Submit</button>
-</form>
+<div style="padding: 20px;">
+  <h2>Submit a Ticket</h2>
 
+  <form action="{{ url_for('ticket_process') }}" method="post">
+    <input type="text" name="ticket" placeholder="Enter your ticket query" required>
+    <button type="submit">Submit</button>
+  </form>
+
+  <hr>
+
+  {% if result %}
+  <div style="margin-top: 20px; border: 1px solid #ccc; padding: 10px;">
+    <h3>Analysis Result:</h3>
+    <p><strong>Priority:</strong> {{ result.priority }}</p>
+    <p><strong>Sentiment Score:</strong> {{ result.sentiment_score }}</p>
+    <pre>{{ result.sentiment | tojson(indent=2) }}</pre>
+  </div>
+  {% endif %}
+</div>
 {% endblock %}
